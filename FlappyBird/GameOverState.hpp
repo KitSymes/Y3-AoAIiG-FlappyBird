@@ -12,6 +12,7 @@ namespace Sonar
         GameOverState(GameDataRef data, int score);
         
         void Init();
+        void CleanUp() {}
         
         void HandleInput();
         void Update(float dt);

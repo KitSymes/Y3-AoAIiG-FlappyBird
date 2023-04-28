@@ -35,6 +35,7 @@ namespace Sonar
 			{
 				if (this->_isReplacing)
 				{
+					this->_states.top()->CleanUp();
 					this->_states.pop();
 				}
 				else

@@ -20,9 +20,9 @@ namespace Sonar
 	{
 	public:
 		GameState(GameDataRef data);
-		~GameState();
 
 		void Init();
+		void CleanUp();
 
 		void HandleInput();
 		void Update(float dt);

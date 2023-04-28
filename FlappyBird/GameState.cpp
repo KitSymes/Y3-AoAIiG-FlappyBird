@@ -18,9 +18,9 @@ namespace Sonar
 		m_pAIController->setGameState(this);
 	}
 
-	GameState::~GameState()
+	void GameState::CleanUp()
 	{
-		if (!_init)
+ 		if (!_init)
 			return;
 
 		for (Bird* bird : birds)

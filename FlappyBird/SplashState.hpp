@@ -12,6 +12,7 @@ namespace Sonar
 		SplashState(GameDataRef data);
 
 		void Init();
+		void CleanUp() {}
 
 		void HandleInput();
 		void Update(float dt);
