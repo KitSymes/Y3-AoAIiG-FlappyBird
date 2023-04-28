@@ -1,8 +1,9 @@
 #include "Bird.hpp"
+#include <iostream>
 
 namespace Sonar
 {
-	Bird::Bird(GameDataRef data) : _data(data)
+	Bird::Bird(GameDataRef data, int id) : _data(data)
 	{
 		_animationIterator = 0;
 
@@ -22,6 +23,7 @@ namespace Sonar
 		_birdSprite.setOrigin(origin);
 
 		_rotation = 0;
+		_id = id;
 	}
 
 	Bird::~Bird()
@@ -54,6 +56,14 @@ namespace Sonar
 
 	void Bird::Update(float dt)
 	{
+		if (BIRD_STATE_DEAD == _birdState)
+		{
+			float movement = PIPE_MOVEMENT_SPEED * dt;
+
+			_birdSprite.move(-movement, 0);
+			return;
+		}
+
 		if (BIRD_STATE_FALLING == _birdState)
 		{
 			_birdSprite.move(0, GRAVITY * dt);
@@ -109,5 +119,11 @@ namespace Sonar
 		sf::Vector2f v = _birdSprite.getPosition();
 		x = (int)v.x;
 		y = (int)v.y;
+	}
+
+	void Bird::Die(int score)
+	{
+		std::cout << _id << " died at " << score << std::endl;
+		_birdState = BIRD_STATE_DEAD;
 	}
 }

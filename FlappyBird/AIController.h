@@ -11,7 +11,7 @@ public:
 	~AIController();
 
 	void setGameState(GameState* pGameState) { m_pGameState = pGameState; }
-	void update();
+	void update(Bird* bird);
 	bool shouldFlap(); // note when this is called, it resets the flap state
 
 public:

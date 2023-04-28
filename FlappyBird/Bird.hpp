@@ -12,7 +12,7 @@ namespace Sonar
 	class Bird
 	{
 	public:
-		Bird(GameDataRef data);
+		Bird(GameDataRef data, int id);
 		~Bird();
 
 		void Draw();
@@ -27,6 +27,8 @@ namespace Sonar
 
 		void getHeight(int& x, int& y);
 
+		void Die(int score);
+		bool IsDead() { return BIRD_STATE_DEAD == _birdState; }
 	private:
 		GameDataRef _data;
 
@@ -43,5 +45,6 @@ namespace Sonar
 
 		float _rotation;
 
+		int _id;
 	};
 }

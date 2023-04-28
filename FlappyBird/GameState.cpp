@@ -18,8 +18,24 @@ namespace Sonar
 		m_pAIController->setGameState(this);
 	}
 
+	GameState::~GameState()
+	{
+		if (!_init)
+			return;
+
+		for (Bird* bird : birds)
+			delete bird;
+
+		delete pipe;
+		delete land;
+		delete flash;
+		delete hud;
+	}
+
 	void GameState::Init()
 	{
+		_init = true;
+
 		if (!_hitSoundBuffer.loadFromFile(HIT_SOUND_FILEPATH))
 		{
 			std::cout << "Error Loading Hit Sound Effect" << std::endl;
@@ -52,7 +68,9 @@ namespace Sonar
 
 		pipe = new Pipe(_data);
 		land = new Land(_data);
-		bird = new Bird(_data);
+		//bird = new Bird(_data);
+		for (int i = 0; i < BIRD_COUNT; i++)
+			birds.push_back(new Bird(_data, i));
 		flash = new Flash(_data);
 		hud = new HUD(_data);
 
@@ -71,21 +89,18 @@ namespace Sonar
 		{
 			_gameState = GameStates::ePlaying;
 
-			m_pAIController->update();
-
-			if (m_pAIController->shouldFlap())
+			for (Bird* bird : birds)
 			{
-				std::cout << "tap!" << std::endl;
-				bird->Tap();
-				_wingSound.play();
-			}
-			else {
-				std::cout << "not tap :(" << std::endl;
+				m_pAIController->update(bird);
+
+				if (m_pAIController->shouldFlap())
+				{
+					bird->Tap();
+					_wingSound.play();
+				}
 			}
 		}
-
 #endif
-
 		sf::Event event;
 		while (this->_data->window.pollEvent(event))
 		{
@@ -99,7 +114,7 @@ namespace Sonar
 				if (GameStates::eGameOver != _gameState)
 				{
 					_gameState = GameStates::ePlaying;
-					bird->Tap();
+					birds[0]->Tap();
 
 					_wingSound.play();
 				}
@@ -111,7 +126,8 @@ namespace Sonar
 	{
 		if (GameStates::eGameOver != _gameState)
 		{
-			bird->Animate(dt);
+			for (Bird* bird : birds)
+				bird->Animate(dt);
 			land->MoveLand(dt);
 		}
 
@@ -131,54 +147,70 @@ namespace Sonar
 				clock.restart();
 			}
 
-			bird->Update(dt);
+			for (Bird* bird : birds)
+				bird->Update(dt);
 
 			std::vector<sf::Sprite> landSprites = land->GetSprites();
 
-			for (unsigned int i = 0; i < landSprites.size(); i++)
+			// Assume all birds are dead
+			_gameState = GameStates::eGameOver;
+			bool scored = false;
+
+			for (Bird* bird : birds)
 			{
-				if (collision.CheckSpriteCollision(bird->GetSprite(), 0.7f, landSprites.at(i), 1.0f, false))
+				if (bird->IsDead())
+					continue;
+
+				// A bird is not dead, so we keep playing
+				_gameState = GameStates::ePlaying;
+
+				for (unsigned int i = 0; i < landSprites.size(); i++)
 				{
-					_gameState = GameStates::eGameOver;
-
-					clock.restart();
-
-					_hitSound.play();
-				}
-			}
-
-			std::vector<sf::Sprite> pipeSprites = pipe->GetSprites();
-
-			for (unsigned int i = 0; i < pipeSprites.size(); i++)
-			{
-				if (collision.CheckSpriteCollision(bird->GetSprite(), 0.625f, pipeSprites.at(i), 1.0f, true))
-				{
-					_gameState = GameStates::eGameOver;
-
-					clock.restart();
-
-					_hitSound.play();
-				}
-			}
-
-			if (GameStates::ePlaying == _gameState)
-			{
-				std::vector<sf::Sprite> &scoringSprites = pipe->GetScoringSprites();
-
-				for (unsigned int i = 0; i < scoringSprites.size(); i++)
-				{
-					if (collision.CheckSpriteCollision(bird->GetSprite(), 0.625f, scoringSprites.at(i), 1.0f, false))
+					if (collision.CheckSpriteCollision(bird->GetSprite(), 0.7f, landSprites.at(i), 1.0f, false))
 					{
-						_score++;
+						bird->Die(_score);
 
-						hud->UpdateScore(_score);
+						_hitSound.play();
+					}
+				}
 
-						scoringSprites.erase(scoringSprites.begin() + i);
+				std::vector<sf::Sprite> pipeSprites = pipe->GetSprites();
 
-						_pointSound.play();
+				for (unsigned int i = 0; i < pipeSprites.size(); i++)
+				{
+					if (collision.CheckSpriteCollision(bird->GetSprite(), 0.625f, pipeSprites.at(i), 1.0f, true))
+					{
+						bird->Die(_score);
+
+						_hitSound.play();
+					}
+				}
+
+				if (GameStates::ePlaying == _gameState)
+				{
+					std::vector<sf::Sprite>& scoringSprites = pipe->GetScoringSprites();
+
+					for (unsigned int i = 0; i < scoringSprites.size(); i++)
+					{
+						if (collision.CheckSpriteCollision(bird->GetSprite(), 0.625f, scoringSprites.at(i), 1.0f, false))
+						{
+							scored = true;
+							scoringSprites.erase(scoringSprites.begin() + i);
+						}
 					}
 				}
 			}
+
+			if (scored)
+			{
+				_score++;
+				hud->UpdateScore(_score);
+				_pointSound.play();
+			}
+
+			// If all the birds died, reset
+			if (_gameState == GameStates::eGameOver)
+				clock.restart();
 		}
 
 		if (GameStates::eGameOver == _gameState)
@@ -194,13 +226,15 @@ namespace Sonar
 
 	void GameState::Draw(float dt)
 	{
-		this->_data->window.clear( sf::Color::Red );
+		this->_data->window.clear(sf::Color::Red);
 
 		this->_data->window.draw(this->_background);
 
 		pipe->DrawPipes();
 		land->DrawLand();
-		bird->Draw();
+
+		for (Bird* bird : birds)
+			bird->Draw();
 
 		flash->Draw();
 

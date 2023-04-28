@@ -20,6 +20,7 @@ namespace Sonar
 	{
 	public:
 		GameState(GameDataRef data);
+		~GameState();
 
 		void Init();
 
@@ -29,7 +30,7 @@ namespace Sonar
 
 		Pipe* GetPipeContainer() { return pipe; };
 		Land* GetLandContainer() { return land; };
-		Bird* GetBird() { return bird; }
+		//Bird* GetBird() { return bird; }
 
 	private:
 		GameDataRef _data;
@@ -38,10 +39,13 @@ namespace Sonar
 
 		Pipe *pipe;
 		Land *land;
-		Bird *bird;
+		//Bird *bird;
+		std::vector<Bird*> birds;
 		Collision collision;
 		Flash *flash;
 		HUD *hud;
+
+		bool _init = false;
 
 		sf::Clock clock;
 
