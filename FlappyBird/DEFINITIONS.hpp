@@ -49,7 +49,8 @@
 #define BIRD_STATE_FLYING 3
 #define BIRD_STATE_DEAD 4
 
-#define BIRD_COUNT 20
+#define BIRD_COUNT 4
+#define PARENT_COUNT 2
 
 #define GRAVITY 350.0f
 #define FLYING_SPEED 350.0f

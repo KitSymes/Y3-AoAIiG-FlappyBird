@@ -1,8 +1,7 @@
 #pragma once
 
-
 #include "GameState.hpp"
-using namespace Sonar;
+#include "Perceptron.h"
 
 class AIController
 {

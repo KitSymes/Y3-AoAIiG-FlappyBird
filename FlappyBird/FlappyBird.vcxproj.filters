@@ -49,6 +49,9 @@
     <ClCompile Include="AIController.cpp">
       <Filter>AI Code</Filter>
     </ClCompile>
+    <ClCompile Include="Perceptron.cpp">
+      <Filter>AI Code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssetManager.hpp">
@@ -102,6 +105,10 @@
     <ClInclude Include="AIController.h">
       <Filter>AI Code</Filter>
     </ClInclude>
+    <ClInclude Include="Perceptron.h">
+      <Filter>AI Code</Filter>
+    </ClInclude>
+    <ClInclude Include="nlohmann\json.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="Resources\audio\Hit.wav">
@@ -188,5 +195,9 @@
     <Filter Include="Core code &amp; Assets">
       <UniqueIdentifier>{908122a9-2515-4d27-86f3-39552f92b980}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cpp.hint" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

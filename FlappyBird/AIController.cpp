@@ -22,7 +22,7 @@ AIController::~AIController()
 // set m_bShouldFlap to true or false.
 void AIController::update(Bird* bird)
 {
-	if (m_pGameState == nullptr)
+	if (m_pGameState == nullptr || bird->IsDead())
 		return;
 
 	Pipe* pipe = m_pGameState->GetPipeContainer();
@@ -31,15 +31,20 @@ void AIController::update(Bird* bird)
 
 	// do some AI stuff, decide whether to flap
 	float fDistanceToFloor = distanceToFloor(land, bird);
-
 	float fDistanceToNearestPipe = distanceToNearestPipes(pipe, bird);
+
+	float inputs[PERCEPTRON_WEIGHT_COUNT];
+	inputs[0] = fDistanceToFloor;
+	inputs[1] = fDistanceToNearestPipe;
+	inputs[2] = 444.0f;
 
 	if (fDistanceToNearestPipe != ERROR_DISTANCE) {
 		float fDistanceToCentreOfGap = distanceToCentreOfPipeGap(pipe, bird);
-		fDistanceToCentreOfGap = fDistanceToCentreOfGap;
 
-		
+		inputs[2] = fDistanceToCentreOfGap;
 	}
+
+	m_bShouldFlap = bird->GetPerceptron().Calculate(inputs) > 0.7f;
 	
 	// this means the birdie always flaps. Should only be called when the bird should need to flap. 
 	//m_bShouldFlap = true;
