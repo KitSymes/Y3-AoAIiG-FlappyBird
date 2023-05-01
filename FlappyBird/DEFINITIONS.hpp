@@ -50,7 +50,7 @@
 #define BIRD_STATE_DEAD 4
 
 #define SILENT true
-#define BIRD_COUNT 64
+#define BIRD_COUNT 176
 #define PARENT_COUNT 8
 
 #define GRAVITY 350.0f

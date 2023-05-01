@@ -333,33 +333,47 @@ namespace Sonar
 		std::string winningChromosomes[PARENT_COUNT];
 
 		// Selection
+
 		// Run tournaments until PARENT_COUNT have been chosen
 		std::vector<int> temp;
 		std::vector<std::vector<int>> tournament;
+
+		for (int i = 0; i < PARENT_COUNT; i++)
+		{
+			std::vector<int> group;
+			tournament.push_back(group);
+		}
 
 		// Fill temp with json indexes
 		for (int i = 0; i < BIRD_COUNT; i++)
 			temp.push_back(i);
 
-		// Fill out the tournament - there will be the same number of groups as parents
-		for (int groupCount = 0; groupCount < PARENT_COUNT; groupCount++)
+		int currentGroup = 0;
+		while (temp.size() > 0)
 		{
-			std::vector<int> group;
-			Log("Group " + std::to_string(groupCount) + ": ");
-			for (int i = 0; i < (BIRD_COUNT / PARENT_COUNT); i++)
+			// Get a random index of temp
+			int random = rand() % temp.size();
+			// Add the json index at that temp index to the current group
+			tournament[currentGroup].push_back(temp[random]);
+			// Erase the temp index to prevent the json index from being chosen more than once
+			temp.erase(temp.begin() + random);
+
+			currentGroup = (currentGroup + 1) % PARENT_COUNT;
+		}
+
+		// Print out the groups
+		for (int groupNum = 0; groupNum < PARENT_COUNT; groupNum++)
+		{
+			Log("Group " + std::to_string(groupNum) + ": ");
+			for (int i = 0; i < tournament[groupNum].size(); i++)
 			{
-				// Get a random index of temp
-				int random = rand() % temp.size();
-				// Add the json index at that temp index to the current group
-				group.push_back(temp[random]);
-				Log(std::to_string(temp[random]) + " (" + std::to_string((int)_currentGeneration["chromosome_" + std::to_string(temp[random])]["score"]) + ")");
-				if (i < (BIRD_COUNT / PARENT_COUNT) - 1)
+				Log(std::to_string(tournament[groupNum][i]) +
+					" (" +
+					std::to_string((int)_currentGeneration["chromosome_" + std::to_string(tournament[groupNum][i])]["score"])
+					+ ")");
+				if (i < tournament[groupNum].size() - 1)
 					Log(", ");
-				// Erase the temp index to prevent the json index from being chosen more than once
-				temp.erase(temp.begin() + random);
 			}
-			// Add the group to the tournament
-			tournament.push_back(group);
 			Log("\n");
 		}
 
@@ -369,7 +383,7 @@ namespace Sonar
 			int max = tournament[group][0];
 			// Compare the genes
 			// Start at 1 because 0 is already max by default
-			for (int i = 1; i < BIRD_COUNT / PARENT_COUNT; i++)
+			for (int i = 1; i < tournament[group].size(); i++)
 			{
 				int current = tournament[group][i];
 				if (_currentGeneration["chromosome_" + std::to_string(current)]["score"]
@@ -378,7 +392,10 @@ namespace Sonar
 			}
 
 			winners[group] = _currentGeneration["chromosome_" + std::to_string(max)];
-			Log(std::to_string(max));
+			Log(std::to_string(max) +
+				"(" +
+				std::to_string((int)_currentGeneration["chromosome_" + std::to_string(max)]["score"]) +
+				")");
 			if (group < PARENT_COUNT - 1)
 				Log(", ");
 		}
@@ -390,9 +407,6 @@ namespace Sonar
 		for (int round = 0; round < PARENT_COUNT; round++)
 			for (float weight : winners[round]["weights"])
 			{
-				/*float testFloat = 0.5;
-				int testRecast = *(int*)&testFloat;
-				std::string testStr = std::bitset<32>(testRecast).to_string();*/
 				int recast = *(int*)&weight;
 				winningChromosomes[round] += std::bitset<32>(recast).to_string();
 			}
@@ -402,46 +416,71 @@ namespace Sonar
 		for (int first = 0; first < PARENT_COUNT; first++)
 			for (int second = 0; second < PARENT_COUNT; second++)
 			{
-				std::string child;
+				std::vector<std::string> children;
 				if (first == second)
-					child = winningChromosomes[first];
+					children.push_back(winningChromosomes[first]);
 				else
 				{
 					std::string chromosomeA = winningChromosomes[first];
 					std::string chromosomeB = winningChromosomes[second];
 
 					// Crossover
-					// A bird is 96 bits
-					for (int i = 0; i < chromosomeA.size() / bitsPerGene; i++)
+					// A bird is 96 bits total - 3 * 32 (3 floats)
+					/*for (int i = 0; i < chromosomeA.size() / bitsPerGene; i++)
 					{
 						if (i % 2 == 0)
-							child += chromosomeA.substr(i * bitsPerGene, bitsPerGene);
+							children += chromosomeA.substr(i * bitsPerGene, bitsPerGene);
 						else
 							child += chromosomeB.substr(i * bitsPerGene, bitsPerGene);
-					}
+					}*/
+
+					children.push_back("");
+					children.push_back("");
+					children.push_back("");
+
+					children[0] += chromosomeA.substr(0, bitsPerGene);
+					children[0] += chromosomeA.substr(bitsPerGene, bitsPerGene);
+					children[0] += chromosomeB.substr(bitsPerGene * 2, bitsPerGene);
+
+					children[1] += chromosomeA.substr(0, bitsPerGene);
+					children[1] += chromosomeB.substr(bitsPerGene, bitsPerGene);
+					children[1] += chromosomeA.substr(bitsPerGene * 2, bitsPerGene);
+
+					children[2] += chromosomeA.substr(0, bitsPerGene);
+					children[2] += chromosomeB.substr(bitsPerGene, bitsPerGene);
+					children[2] += chromosomeB.substr(bitsPerGene * 2, bitsPerGene);
 				}
 
-				// Mutation
-				for (int i = 0; i < child.size(); i++)
+				for (int childNum = 0; childNum < children.size(); childNum++)
 				{
-					if (rand() % 100 < 1)
-						child.replace(i, 1, child.at(i) == '0' ? "1" : "0");
-				}
-
-				while (!child.empty())
-				{
-					json weights;
-					for (int perceptronNum = 0; perceptronNum < PERCEPTRON_WEIGHT_COUNT; perceptronNum++)
+					while (!children[childNum].empty())
 					{
-						int n = 0;
-						for (int i = 0; i < 32; ++i)
-							n |= (child[(perceptronNum * 32) + i] - 48) << 31 - i;
-						float f = *(float*)&n;
-					_currentGeneration["chromosome_" + std::to_string(currentChildChromsome)]["weights"].push_back(f);
+						json weights;
+						for (int perceptronNum = 0; perceptronNum < PERCEPTRON_WEIGHT_COUNT; perceptronNum++)
+						{
+							int n = 0;
+							for (int i = 0; i < 32; ++i)
+								n |= (children[childNum][(perceptronNum * 32) + i] - 48) << 31 - i;
+							float f = *(float*)&n;
+							// Mutation
+							if (rand() % 100 < 1)
+							{
+								int max = 10;
+
+								if (_currentGenerationNum <= 100)
+									max = 10000 - _currentGenerationNum * 100;
+
+								// Evaluates to between -10 and 10, and shrinks by 0.1 each generation. Then stays at 0.01.
+								float kohonenAdjustment = ((rand() % (max * 2)) - max) / 1000.0f;
+								f += kohonenAdjustment;
+								std::cout << kohonenAdjustment << std::endl;
+							}
+							_currentGeneration["chromosome_" + std::to_string(currentChildChromsome)]["weights"].push_back(f);
+						}
+						children[childNum].erase(0, 96);
 					}
-					child.erase(0, 96);
+					currentChildChromsome++;
 				}
-				currentChildChromsome++;
 			}
 
 
