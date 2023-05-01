@@ -49,6 +49,7 @@
 #define BIRD_STATE_FLYING 3
 #define BIRD_STATE_DEAD 4
 
+#define SILENT true
 #define BIRD_COUNT 64
 #define PARENT_COUNT 8
 

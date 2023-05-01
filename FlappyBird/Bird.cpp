@@ -57,7 +57,7 @@ namespace Sonar
 
 	void Bird::Update(float dt)
 	{
-		if (BIRD_STATE_DEAD == _birdState)
+		if (IsDead())
 		{
 			float movement = PIPE_MOVEMENT_SPEED * dt;
 
@@ -106,6 +106,9 @@ namespace Sonar
 
 	void Bird::Tap()
 	{
+		if (IsDead())
+			return;
+
 		_movementClock.restart();
 		_birdState = BIRD_STATE_FLYING;
 	}
