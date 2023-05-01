@@ -145,7 +145,9 @@ namespace Sonar
 				if (m_pAIController->shouldFlap())
 				{
 					bird->Tap();
+#if !SILENT
 					_wingSound.play();
+#endif
 				}
 			}
 		}
@@ -165,7 +167,9 @@ namespace Sonar
 					_gameState = GameStates::ePlaying;
 					birds[0]->Tap();
 
+#if !SILENT
 					_wingSound.play();
+#endif
 				}
 			}
 		}
@@ -220,7 +224,9 @@ namespace Sonar
 						Log(std::to_string(bird->GetID()) + " died at " + std::to_string(_score) + "\n");
 						_currentGeneration["chromosome_" + std::to_string(bird->GetID())]["score"] = _score;
 
+#if !SILENT
 						_hitSound.play();
+#endif
 						break;
 					}
 				}
@@ -238,7 +244,9 @@ namespace Sonar
 						Log(std::to_string(bird->GetID()) + " died at " + std::to_string(_score) + "\n");
 						_currentGeneration["chromosome_" + std::to_string(bird->GetID())]["score"] = _score;
 
+#if !SILENT
 						_hitSound.play();
+#endif
 						break;
 					}
 				}
@@ -265,7 +273,9 @@ namespace Sonar
 			{
 				_score++;
 				hud->UpdateScore(_score);
+#if !SILENT
 				_pointSound.play();
+#endif
 			}
 
 			// If all the birds died, reset
@@ -306,6 +316,13 @@ namespace Sonar
 
 	void GameState::CreateNewGeneration()
 	{
+		// Generate a seed so that the results are repeatable
+		unsigned int seed = unsigned int(time(NULL));
+		if (_currentGeneration.contains("seed"))
+			seed = _currentGeneration["seed"];
+		else
+			_currentGeneration["seed"] = seed;
+		srand(seed);
 		SaveCurrentGeneration();
 
 		_currentChromosomeNum = 0;
