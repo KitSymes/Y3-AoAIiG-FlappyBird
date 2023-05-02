@@ -38,6 +38,36 @@ namespace Sonar
 
 	void GameState::Init()
 	{
+#if EXPORT
+		std::ofstream o("export.csv");
+
+		_currentGenerationNum = 0;
+		o << ",";
+		for (int i = 0; i < BIRD_COUNT; i++)
+			o << std::to_string(i) << ",";
+		o << std::endl;
+
+		while (true)
+		{
+			std::ifstream f("generation_" + std::to_string(_currentGenerationNum) + ".json");
+			if (!f.good())
+				break;
+			o << _currentGenerationNum << ",";
+			_currentGeneration = json::parse(f);
+			for (int birdNum = 0; birdNum < BIRD_COUNT; birdNum++)
+			{
+				if (!_currentGeneration["chromosome_" + std::to_string(birdNum)].contains("score"))
+					break;
+				o << _currentGeneration["chromosome_" + std::to_string(birdNum)]["score"] << ",";
+			}
+			o << std::endl;
+			_currentGenerationNum++;
+		}
+
+		o.close();
+		exit(0);
+#endif
+
 		_init = true;
 
 		if (!_hitSoundBuffer.loadFromFile(HIT_SOUND_FILEPATH))
@@ -496,7 +526,7 @@ namespace Sonar
 
 	void GameState::Log(std::string output)
 	{
-		std::cout << output;
+		//std::cout << output;
 		std::ofstream myfile;
 		myfile.open("log.txt", std::ios::out | std::ios::app);
 		myfile << output;

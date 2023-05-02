@@ -50,6 +50,7 @@
 #define BIRD_STATE_DEAD 4
 
 #define SILENT true
+#define EXPORT false
 #define BIRD_COUNT 176
 #define PARENT_COUNT 8
 
