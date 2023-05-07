@@ -54,6 +54,8 @@ void AIController::Init()
 	_currentGeneration = json::parse(f);
 
 	_currentGenerationNum = REPLAY_GENERATION;
+
+	std::cout << "Replaying " + std::to_string(_currentGenerationNum) + "\n" << std::endl;
 #else
 	_currentGenerationNum = -1;
 	_currentChromosomeNum = -1;
