@@ -2,7 +2,6 @@
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-#include <nlohmann/json.hpp>
 
 #include "State.hpp"
 #include "Game.hpp"
@@ -13,7 +12,6 @@
 #include "Flash.hpp"
 #include "HUD.hpp"
 
-using json = nlohmann::json;
 using namespace Sonar;
 
 class AIController;
@@ -36,9 +34,6 @@ namespace Sonar
 		Land* GetLandContainer() { return land; };
 		//Bird* GetBird() { return bird; }
 
-		void CreateNewGeneration();
-		void SaveCurrentGeneration();
-		void Log(std::string output);
 	private:
 		GameDataRef _data;
 
@@ -53,9 +48,6 @@ namespace Sonar
 		HUD *hud;
 
 		bool _init = false;
-		json _currentGeneration;
-		int _currentGenerationNum;
-		int _currentChromosomeNum;
 
 		sf::Clock clock;
 

@@ -54,7 +54,8 @@
     <ClCompile Include="Land.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenuState.cpp" />
-    <ClCompile Include="Perceptron.cpp" />
+    <ClCompile Include="NeuralNetwork.cpp" />
+    <ClCompile Include="Neuron.cpp" />
     <ClCompile Include="Pipe.cpp" />
     <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
@@ -73,8 +74,9 @@
     <ClInclude Include="InputManager.hpp" />
     <ClInclude Include="Land.hpp" />
     <ClInclude Include="MainMenuState.hpp" />
+    <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="nlohmann\json.hpp" />
-    <ClInclude Include="Perceptron.h" />
+    <ClInclude Include="Neuron.h" />
     <ClInclude Include="Pipe.hpp" />
     <ClInclude Include="SplashState.hpp" />
     <ClInclude Include="State.hpp" />

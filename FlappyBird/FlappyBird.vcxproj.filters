@@ -49,7 +49,10 @@
     <ClCompile Include="AIController.cpp">
       <Filter>AI Code</Filter>
     </ClCompile>
-    <ClCompile Include="Perceptron.cpp">
+    <ClCompile Include="Neuron.cpp">
+      <Filter>AI Code</Filter>
+    </ClCompile>
+    <ClCompile Include="NeuralNetwork.cpp">
       <Filter>AI Code</Filter>
     </ClCompile>
   </ItemGroup>
@@ -105,10 +108,13 @@
     <ClInclude Include="AIController.h">
       <Filter>AI Code</Filter>
     </ClInclude>
-    <ClInclude Include="Perceptron.h">
+    <ClInclude Include="Neuron.h">
       <Filter>AI Code</Filter>
     </ClInclude>
     <ClInclude Include="nlohmann\json.hpp" />
+    <ClInclude Include="NeuralNetwork.h">
+      <Filter>AI Code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Media Include="Resources\audio\Hit.wav">

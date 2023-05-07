@@ -3,7 +3,7 @@
 
 namespace Sonar
 {
-	Bird::Bird(GameDataRef data, int id, Perceptron perceptron) : _data(data)
+	Bird::Bird(GameDataRef data, int id) : _data(data)
 	{
 		_animationIterator = 0;
 
@@ -24,7 +24,6 @@ namespace Sonar
 
 		_rotation = 0;
 		_id = id;
-		_perceptron = perceptron;
 	}
 
 	Bird::~Bird()

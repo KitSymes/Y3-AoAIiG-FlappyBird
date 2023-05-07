@@ -51,8 +51,27 @@
 
 #define SILENT true
 #define EXPORT false
-#define BIRD_COUNT 176
-#define PARENT_COUNT 8
+#define REPLAY false
+#define REPLAY_GENERATION 42
+
+#define BIRD_COUNT 100
+#define PARENT_COUNT 10
+
+#define RANDOM_WIEGHT_MAX 0.7f
+#define RANDOM_BIAS_MAX 0.7f
+
+#define NEURONS_PER_HIDDEN_LAYER 4
+#define HIDDEN_LAYER_COUNT 2
+#define INPUT_COUNT 3
+
+#define JSON_CHROMOSOME "chromosome_"
+#define JSON_LAYER "layer_"
+#define JSON_NEURON "neuron_"
+#define JSON_OUTPUT "output"
+#define JSON_WEIGHTS "weights"
+#define JSON_BIAS "bias"
+#define JSON_SCORE "score"
+#define JSON_ ""
 
 #define GRAVITY 350.0f
 #define FLYING_SPEED 350.0f
